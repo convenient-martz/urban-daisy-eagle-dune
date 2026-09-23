@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "IECC 2018 Workbook",
+      "hasCanvas": false,
+      "bodyTextLen": 2801,
+      "bodyTextHash": "8dde5efd01ef1819b3227304871ca8c8d235f690b6193264f88fb344b3a43d34",
+      "bodyTextPrefix": "2018 IECC Workbook CLIMATE Climate zoneDefaults & design temps R",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "IECC 2018 Workbook",
+      "hasCanvas": false,
+      "bodyTextLen": 2791,
+      "bodyTextHash": "0463f5f5fa0fe610f2603c3f418a4069b409e4c5b5f2f5379cbbc1f7a909b347",
+      "bodyTextPrefix": "2018 IECC Workbook CLIMATE Climate zoneDefaults & design temps R",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}

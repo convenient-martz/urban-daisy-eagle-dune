@@ -56,10 +56,6 @@ export function ResEnvelopeCalc() {
   );
 }
 
-type UaRow = { id: number; kind: UaAssemblyKind; area: number; u: number };
-
-let uaSeq = 1;
-
 export function ResUaCalc() {
   const zone = useWorkbook((s) => s.zone);
   const env = resFor(zone);
@@ -163,7 +159,7 @@ export function ResUaCalc() {
         <div className="mt-3">
           <GhostButton
             onClick={() =>
-              setRows((rs) => [...rs, { id: ++uaSeq, kind: "wall", area: 100, u: env.wallU }])
+              setRows((rs) => [...rs, { id: nextRowId(rs), kind: "wall", area: 100, u: env.wallU }])
             }
           >
             Add assembly

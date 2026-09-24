@@ -1,4 +1,3 @@
-import * as XLSX from "xlsx";
 import type { ClimateKey } from "@/lib/iecc/types";
 import {
   commercialColumn,
@@ -369,19 +368,62 @@ function buildSheets(opts: {
   ];
 }
 
-function workbookFromSheets(sheets: Sheet[]): XLSX.WorkBook {
-  const wb = XLSX.utils.book_new();
-  for (const s of sheets) {
-    const ws = XLSX.utils.aoa_to_sheet(s.rows);
-    ws["!cols"] = [{ wch: 36 }, { wch: 22 }, { wch: 22 }, { wch: 18 }, { wch: 16 }, { wch: 16 }];
-    XLSX.utils.book_append_sheet(wb, ws, s.name);
+function xmlEscape(s: string): string {
+  return s.replace(/[&<>"]/g, (ch) => {
+    if (ch === "&") return "&" + "amp;";
+    if (ch === "<") return "&" + "lt;";
+    if (ch === ">") return "&" + "gt;";
+    return "&" + "quot;";
+  });
+}
+
+function cellXml(v: Cell): string {
+  if (v === null || v === undefined || v === "") {
+    return `<Cell><Data ss:Type="String"></Data></Cell>`;
   }
-  return wb;
+  if (typeof v === "boolean") {
+    return `<Cell><Data ss:Type="Boolean">${v ? 1 : 0}</Data></Cell>`;
+  }
+  if (typeof v === "number" && Number.isFinite(v)) {
+    return `<Cell><Data ss:Type="Number">${v}</Data></Cell>`;
+  }
+  return `<Cell><Data ss:Type="String">${xmlEscape(String(v))}</Data></Cell>`;
+}
+
+function toSpreadsheetMl(sheets: Sheet[]): string {
+  const body = sheets
+    .map((s) => {
+      const name = xmlEscape(s.name.replace(/[\\/?*:[\]]/g, "-").slice(0, 31));
+      const rows = s.rows.map((r) => `<Row>${r.map(cellXml).join("")}</Row>`).join("");
+      return `<Worksheet ss:Name="${name}"><Table>${rows}</Table></Worksheet>`;
+    })
+    .join("");
+  return `<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+${body}
+</Workbook>`;
 }
 
 function stamp(d = new Date()): string {
   const p = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`;
+}
+
+function downloadBlob(filename: string, xml: string) {
+  if (typeof document === "undefined") return;
+  const blob = new Blob([xml], { type: "application/vnd.ms-excel" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
 export function downloadProjectXls(opts: {
@@ -393,10 +435,10 @@ export function downloadProjectXls(opts: {
   savedAt?: string;
 }): string {
   const sheets = buildSheets(opts);
-  const wb = workbookFromSheets(sheets);
+  const xml = toSpreadsheetMl(sheets);
   const base = slugFile(opts.snapshotName || opts.projectName);
   const filename = `IECC-2018-${base}-${opts.zone}-${stamp()}.xls`;
-  XLSX.writeFile(wb, filename, { bookType: "xlml" });
+  downloadBlob(filename, xml);
   return filename;
 }
 

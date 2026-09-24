@@ -20,18 +20,17 @@ export function SnapshotBar() {
     <div className="relative flex items-center gap-2">
       <button
         type="button"
-        className="grid size-11 place-items-center rounded-sm border border-line bg-bg text-ink-2"
+        className="inline-flex h-11 items-center gap-1.5 rounded-sm border border-line bg-bg px-3 text-sm font-medium text-ink-2"
         aria-label="Save snapshot"
-        title="Save snapshot"
         onClick={() => setOpen((v) => !v)}
       >
-        <Camera className="size-4" />
+        <Camera className="size-4 shrink-0" />
+        Save
       </button>
       <button
         type="button"
-        className="grid size-11 place-items-center rounded-sm border border-line bg-bg text-ink-2"
+        className="inline-flex h-11 items-center gap-1.5 rounded-sm border border-line bg-bg px-3 text-sm font-medium text-ink-2"
         aria-label="Export Excel"
-        title="Export Excel (.xls)"
         onClick={() => {
           const file = downloadProjectXls({
             projectName,
@@ -43,7 +42,8 @@ export function SnapshotBar() {
           toast.success(`Downloaded ${file}`);
         }}
       >
-        <Download className="size-4" />
+        <Download className="size-4 shrink-0" />
+        Excel
       </button>
       {open && (
         <div className="absolute top-12 right-0 z-40 w-[min(20rem,calc(100vw-2rem))] rounded-lg border border-line bg-surface p-3 shadow-sheet">
